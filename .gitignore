@@ -1,3 +1,6 @@
+# Migrations (temporary)
+migrations/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -33,3 +36,6 @@ coverage.xml
 
 # Translations
 *.mo
+
+# Vim
+*.sw[op]

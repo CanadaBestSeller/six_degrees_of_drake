@@ -4,6 +4,8 @@ import urllib
 import urllib2
 import re
 
+domain = "http://en.wikipedia.org"
+
 class Artist(models.Model):
     # url is the most important field. It must be unique, and
     # it is the single source of information
@@ -19,19 +21,44 @@ class Artist(models.Model):
     def __unicode__(self):
         return self.name
 
+    @classmethod
+    def get_or_create_with_url(cls, url):
+        """
+        The only method you should use for getting/creating Artist
+        makes sure that the inputted url is indeed the final redirect (canonical url)
+        so that we avoid creating extra instances of Artists, such as 
+        www.wiki.com/Drake_(Rapper) & www.wiki.com/Drake_(Entertainer)
+        """
+        # Get source code
+        request = urllib2.urlopen(url)
+        source_code = request.read(40000)
+
+        # Get canonical url
+        redirect_pattern = 'wgInternalRedirectTargetUrl":"(.*?)"'
+        redirect_subdomain = re.search(redirect_pattern, source_code, re.DOTALL)
+
+        if redirect_subdomain:
+            canonical_url = domain + urllib.quote(redirect_subdomain.group(1))
+        else :
+            canonical_url = urllib.quote(url, safe=':/')
+
+        artist, just_created = cls.objects.get_or_create(url=canonical_url)
+        
+        # Populate name
+        if just_created:
+            artist_name_pattern = "<title>(.*?)<\/title>"
+            artist_name = re.search(artist_name_pattern, source_code, re.DOTALL).group(1)
+            clean_artist_name = artist_name.split('(')[0].split(' - ')[0].rstrip()
+            artist.name = clean_artist_name
+
+        return artist, just_created
+
     def populate(self):
         # Get source code
         request = urllib2.urlopen(self.url)
         source_code = request.read(40000)
 
-        # Populate name
-        artist_name_pattern = "<title>(.*?)<\/title>"
-        artist_name = re.search(artist_name_pattern, source_code, re.DOTALL).group(1)
-        clean_artist_name = artist_name.split('(')[0].split(' - ')[0].rstrip()
-        self.name = clean_artist_name
-
         # Get list of associated acts as url
-        domain = "http://en.wikipedia.org"
         aa_url_pattern = "Associated acts(.*?)<\/td>"
         aa_url_raw = re.search(aa_url_pattern, source_code, re.DOTALL)
 
@@ -42,11 +69,12 @@ class Artist(models.Model):
             href_delimiter_pattern = 'href="(.*?)"'
             aa_url_list = re.findall(href_delimiter_pattern, aa_url, re.DOTALL)
 
-            associated_acts_urls = [domain + urllib.quote(a) for a in aa_url_list]
+            # There urls are dirty, but will be clean upon artist creation
+            associated_acts_urls = [domain + a for a in aa_url_list]
 
             for associated_act_url in associated_acts_urls:
-                associated_act, created = Artist.objects.get_or_create(url=associated_act_url)
-                if not created:
+                associated_act, just_created = Artist.get_or_create_with_url(associated_act_url)
+                if just_created:
                     associated_act.save()
                 self.associated_acts.add(associated_act)
 
