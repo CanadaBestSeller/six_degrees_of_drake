@@ -1,3 +1,4 @@
 from django.contrib import admin
+from six_degrees_of_drake.models import Artist
 
-# Register your models here.
+admin.site.register(Artist)

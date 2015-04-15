@@ -3,6 +3,7 @@ from django.db import models
 import urllib
 import urllib2
 import re
+import json
 
 domain = "http://en.wikipedia.org"
 
@@ -21,6 +22,9 @@ class Artist(models.Model):
     def __unicode__(self):
         return self.name
 
+    #
+    # CLASS METHODS
+    #
     @classmethod
     def get_or_create_with_url(cls, url):
         """
@@ -53,6 +57,29 @@ class Artist(models.Model):
 
         return artist, just_created
 
+    @classmethod
+    def get_jsonified_artists(cls):
+        """
+        Returns a JSON string of existing artists compatible with d3js graph renderings
+        """
+        artist_list = []
+        for artist in Artist.objects.all():
+            artist_list.append({'index': artist.id, 'name': artist.name, 'group': artist.id % 5})
+        return json.dumps(artist_list)
+
+    # @classmethod
+    # def get_jsonified_relationships(cls):
+    #     """
+    #     Returns a JSON string of existing artists' relationships compatible with d3js graph renderings
+    #     """
+    #     artist_list = []
+    #     for artist in Artist.objects.all():
+    #         artist_list.append({'name': artist.name, 'group': artist.id})
+    #     return json.dumps(artist_list)
+
+    #
+    # INSTANCE METHODS
+    #
     def populate(self):
         # Get source code
         request = urllib2.urlopen(self.url)
