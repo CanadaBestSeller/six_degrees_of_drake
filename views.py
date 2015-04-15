@@ -12,17 +12,16 @@ def index(request):
 # DETAILS PAGE
 def detail(request, artist_name):
     response = "This is the detail page for %s <br><br>" % artist_name
-    artist_list = Artist.objects.filter(name__iexact=artist_name)
+    # TODO: Try to init artist if does not exist
+    artist_matches = Artist.objects.filter(name__iexact=artist_name)
 
-    if artist_list:
-        artist = artist_list[0]
-        response += "%s has the following associated acts:<br><br>" % artist_name
-        for a in artist.associated_acts.all():
-            response += '- ' + a.name + '<br>'
+    if artist_matches:
+        artist = artist_matches[0] # TODO: Try to init artist it doesn't exist
+        context = {'nodes': artist.nodes_json(), 'links': artist.links_json()}
+        return render(request, 'six_degrees_of_drake/details.html', context)
     else:
         response += "Cannot find name of artist"
-
-    return HttpResponse(response)
+        return HttpResponse(response)
 
 # STATS PAGE
 def stats(request, artist_name):

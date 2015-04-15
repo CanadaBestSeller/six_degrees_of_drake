@@ -57,26 +57,6 @@ class Artist(models.Model):
 
         return artist, just_created
 
-    @classmethod
-    def get_jsonified_artists(cls):
-        """
-        Returns a JSON string of existing artists compatible with d3js graph renderings
-        """
-        artist_list = []
-        for artist in Artist.objects.all():
-            artist_list.append({'index': artist.id, 'name': artist.name, 'group': artist.id % 5})
-        return json.dumps(artist_list)
-
-    # @classmethod
-    # def get_jsonified_relationships(cls):
-    #     """
-    #     Returns a JSON string of existing artists' relationships compatible with d3js graph renderings
-    #     """
-    #     artist_list = []
-    #     for artist in Artist.objects.all():
-    #         artist_list.append({'name': artist.name, 'group': artist.id})
-    #     return json.dumps(artist_list)
-
     #
     # INSTANCE METHODS
     #
@@ -106,3 +86,27 @@ class Artist(models.Model):
                 self.associated_acts.add(associated_act)
 
         self.save()
+
+    def nodes_json(self):
+        """
+        Returns a JSON compatible with d3js graphs
+        Contains node information of self and associated acts
+        """
+        nodes = []
+        nodes.append({'id': self.id, 'name': self.name, 'group': self.id % 10})
+
+        for associated_act in self.associated_acts.all():
+            nodes.append({'id': associated_act.id, 'name': associated_act.name, 'group': associated_act.id % 10})
+        return json.dumps(nodes)
+
+    def links_json(self):
+        """
+        Returns a JSON compatible with d3js graphs
+        Contains relationship information of self and associated acts
+        """
+        links = []
+
+        for associated_act in self.associated_acts.all():
+            links.append({'source': self.id, 'target': associated_act.id, 'value': 1}) # TODO: value func
+
+        return json.dumps(links)
