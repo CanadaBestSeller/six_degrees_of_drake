@@ -1,0 +1,16 @@
+Landing Page
+    - CSS
+    * Ajax Wikipedia name search
+        - Find example of wikipedia query API
+        - Use typeahead.js + bloodhound + wiki API
+        - Filter by artists (page with associated acts ONLY)
+        - Customize typeahead.js UI with artist thumbnails
+
+Details Page
+    - Picture of artist on node
+    - Relationship length
+    - AJAX depth of graph level
+    - Change color based on criteria. Eg:
+        - blue=male, red=female
+        - specture: green=rich, grey=poor
+    - Click artist to centralize

@@ -1,4 +1,8 @@
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'six_degrees_of_drake/main.css' %}" />
+
 <h1> 6 Degrees of Drake </h1>
+<p>Who's your favourite artist?
 {% if artist_list %}
     <p>There are {{ artist_list|length }} artist(s) currently in the database.<p>
     <ul>
