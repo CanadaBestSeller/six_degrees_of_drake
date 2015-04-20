@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
+from django.http import JsonResponse
 
 from six_degrees_of_drake.models import Artist
 
@@ -35,3 +36,12 @@ def stats(request, artist_name):
         response += "Cannot find name of artist"
 
     return HttpResponse(response)
+
+# QUERY ENDPOINT
+def query(request, query):
+    # response = '[{"value": %s, "tokens": ["six", "degrees", "of", "drake"]}]' % query
+    response = []
+    response.append({'value': query})
+    response.append({'value': "drake"})
+    response.append({'value': "birdman"})
+    return JsonResponse(response, safe=False)

@@ -1,7 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+{% load staticfiles %}
+<link rel="shortcut icon" type="image/png" href="{% static 'six_degrees_of_drake/favicon.ico' %}"/>
 
+<style>
 node {
   stroke: #fff;
   stroke-width: 1.5px;
@@ -11,9 +11,8 @@ node {
   stroke: #999;
   stroke-opacity: .6;
 }
-
 </style>
-<body>
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
