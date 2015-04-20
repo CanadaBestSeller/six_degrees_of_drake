@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 
+import urllib2
+
 from six_degrees_of_drake.models import Artist
 
 # HOME PAGE
@@ -39,7 +41,16 @@ def stats(request, artist_name):
 
 # QUERY ENDPOINT
 def query(request, query):
-    # response = '[{"value": %s, "tokens": ["six", "degrees", "of", "drake"]}]' % query
+    # Make request to Wikipedia OpenSearch API
+    wikipedia_endpoint = "http://en.wikipedia.org/w/api.php?action=opensearch&search="
+
+    # Transform response into list of URLs
+    # ...
+
+    # Check to see if any entries are artists
+    # ...
+
+    # Add artists entries + url to response object
     response = []
     response.append({'value': query})
     response.append({'value': "drake"})
