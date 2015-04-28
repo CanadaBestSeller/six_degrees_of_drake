@@ -3,8 +3,13 @@ from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 
 import urllib2
+import json
 
 from six_degrees_of_drake.models import Artist
+
+WIKIPEDIA_API_QUERY_ENDPOINT = \
+    'http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srwhat=text&srlimit=3&continue=&srprop=snippet&srsearch=%22associated%20acts%22+intitle:'
+WIKIPEDIA_DOMAIN = 'http://en.wikipedia.org/wiki/'
 
 # HOME PAGE
 def index(request):
@@ -41,18 +46,22 @@ def stats(request, artist_name):
 
 # QUERY ENDPOINT
 def query(request, query):
-    # Make request to Wikipedia OpenSearch API
-    wikipedia_endpoint = "http://en.wikipedia.org/w/api.php?action=opensearch&search="
+    # Make request to Wikipedia API, which has been given parameters to 
+    # search for articles containing the string "associated acts"
+    query_url = WIKIPEDIA_API_QUERY_ENDPOINT + query
 
-    # Transform response into list of URLs
-    # ...
+    # Transform response into list of artists
+    raw_response = urllib2.urlopen(query_url).read()
+    response_object = json.loads(raw_response)
 
-    # Check to see if any entries are artists
-    # ...
+    # Add artist + metatdata to result
+    result = []
+    for artist_entry in response_object['query']['search']:
+        artist_dictionary = {}
+        artist_dictionary['name'] = artist_entry['title']
+        artist_dictionary['url'] = WIKIPEDIA_DOMAIN + urllib2.quote(artist_entry['title'])
+        artist_dictionary['snippet'] = artist_entry['snippet']
+        # TODO get the url of the artist's image
+        result.append(artist_dictionary)
 
-    # Add artists entries + url to response object
-    response = []
-    response.append({'value': query})
-    response.append({'value': "drake"})
-    response.append({'value': "birdman"})
-    return JsonResponse(response, safe=False)
+    return JsonResponse(result, safe=False)

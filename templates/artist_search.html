@@ -29,42 +29,35 @@
 }
 
 .tt-dropdown-menu {
-  width: 600px;
-  margin-top: 12px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+    width: 600px;
+    margin-top: 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .tt-suggestion {
-  padding: 8px 20px;
-  font-size: 14px;
-  line-height: 18px;
+    padding: 8px 20px;
+    font-size: 14px;
+    line-height: 18px;
 }
 </style>
 
 <script>
-// function zip(a) {
-//     result = [];
-//     for (var i = 0; i < a[0].length; i++) {
-//         result.push({"name": a[0][i], "description": a[1][i], "url": a[2][i]});
-//     }
-//     return result;
-// }
-
 var bestPictures = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  remote: {
-      'url': 'query/%QUERY',
-  }
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+        'url': 'query/%QUERY',
+        'wildcard': '%QUERY',
+    }
 });
  
 bestPictures.initialize();
  
 $('#remote .typeahead').typeahead(null, {
-  name: 'best-pictures',
-  displayKey: 'value',
-  source: bestPictures.ttAdapter()
+    name: 'best-pictures',
+    displayKey: 'value',
+    source: bestPictures.ttAdapter()
 });
 </script>    
