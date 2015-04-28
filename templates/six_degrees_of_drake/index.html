@@ -2,18 +2,52 @@
 <link rel="stylesheet" href="{% static 'six_degrees_of_drake/main.css' %}" />
 <link rel="shortcut icon" type="image/png" href="{% static 'six_degrees_of_drake/favicon.ico' %}"/>
 
-<h1> 6 Degrees of Drake </h1>
-<p>Who's your favourite artist?
+<body>
+<div class="masthead">
+    <h1> 6 Degrees of Drake </h1>
 
-{% include 'artist_search.html' %}
+    {% include 'artist_search.html' %}
 
-{% if artist_list %}
-    <p>There are {{ artist_list|length }} artist(s) currently in the database.<p>
-    <ul>
-    {% for artist in artist_list %}
-        <li><a href="/six_degrees_of_drake/{{ artist.name }}/">{{ artist.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>Currently no artists in the database.</p>
-{% endif %}
+    <div class="footer">
+        {% if artist_list %}
+            There are {{ artist_list|length }} artist(s) currently in the database.
+            <ul>
+            {% for artist in artist_list %}
+                <li><a href="/six_degrees_of_drake/{{ artist.name }}/">{{ artist.name }}</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Currently no artists in the database.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+
+<style>
+.masthead {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.footer {
+    font-size: x-small;
+    margin: 400px 0;
+}
+    
+.footer li {
+    display: inline;
+}
+
+.footer li + li:before {
+    content: "|";
+    padding: 0 3px;
+}
+
+.footer ul {
+    padding: 0;
+}
+
+#search {
+    margin: 20px, 20px;
+}
+</style>
