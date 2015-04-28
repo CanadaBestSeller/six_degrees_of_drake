@@ -4,6 +4,7 @@ from django.http import JsonResponse
 
 import urllib2
 import json
+import re
 
 from six_degrees_of_drake.models import Artist
 
@@ -60,8 +61,12 @@ def query(request, query):
         artist_dictionary = {}
         artist_dictionary['name'] = artist_entry['title']
         artist_dictionary['url'] = WIKIPEDIA_DOMAIN + urllib2.quote(artist_entry['title'])
-        artist_dictionary['snippet'] = artist_entry['snippet']
+        artist_dictionary['snippet'] = delete_tags(artist_entry['snippet'])
         # TODO get the url of the artist's image
         result.append(artist_dictionary)
 
     return JsonResponse(result, safe=False)
+
+# UTILS
+def delete_tags(text):
+    return re.sub('<.*?>', '', text)
