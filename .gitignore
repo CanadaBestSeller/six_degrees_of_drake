@@ -39,3 +39,6 @@ coverage.xml
 
 # Vim
 *.sw[op]
+
+# OSX
+*.DS_STORE

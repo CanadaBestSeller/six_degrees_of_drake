@@ -4,7 +4,10 @@
 
 <body>
 <div class="masthead">
-    <h1> 6 Degrees of Drake </h1>
+    <h1> 
+        <img id="logo" src="{% static 'six_degrees_of_drake/logo.jpg' %}" />
+        6 Degrees of Drake
+    </h1>
 
     {% include 'artist_search.html' %}
 
@@ -24,6 +27,13 @@
 </body>
 
 <style>
+#logo {
+    width: 42px;
+    height: 42px;
+    text-align: center;
+    border-radius: 50%;
+}
+
 .masthead {
     max-width: 800px;
     margin: 20px auto;
