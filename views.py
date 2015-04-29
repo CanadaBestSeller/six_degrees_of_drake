@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
+from django.templatetags.static import static
 
 import urllib2
 import json
@@ -8,9 +9,11 @@ import re
 
 from six_degrees_of_drake.models import Artist
 
-WIKIPEDIA_API_QUERY_ENDPOINT = \
-    'http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srwhat=text&srlimit=3&continue=&srprop=snippet&srsearch=%22associated%20acts%22+intitle:'
 WIKIPEDIA_DOMAIN = 'http://en.wikipedia.org/wiki/'
+WIKIPEDIA_API_QUERY_MODULE_ENDPOINT = \
+    'http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srwhat=text&srlimit=3&continue=&srprop=snippet&srsearch=%22associated%20acts%22+intitle:'
+WIKIPEDIA_API_IMAGE_INFO_MODULE_ENDPOINT = \
+    'http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&pithumbsize=100&titles='
 
 # HOME PAGE
 def index(request):
@@ -49,11 +52,10 @@ def stats(request, artist_name):
 def query(request, query):
     # Make request to Wikipedia API, which has been given parameters to 
     # search for articles containing the string "associated acts"
-    query_url = WIKIPEDIA_API_QUERY_ENDPOINT + query
+    query_url = WIKIPEDIA_API_QUERY_MODULE_ENDPOINT + query
 
     # Transform response into list of artists
-    raw_response = urllib2.urlopen(query_url).read()
-    response_object = json.loads(raw_response)
+    response_object = json_to_response_object(query_url)
 
     # Add artist + metatdata to result
     result = []
@@ -62,11 +64,23 @@ def query(request, query):
         artist_dictionary['name'] = artist_entry['title']
         artist_dictionary['url'] = WIKIPEDIA_DOMAIN + urllib2.quote(artist_entry['title'])
         artist_dictionary['snippet'] = delete_tags(artist_entry['snippet'])
+        artist_dictionary['image_url'] = get_artist_image_url(artist_entry['title'])
         # TODO get the url of the artist's image
         result.append(artist_dictionary)
 
     return JsonResponse(result, safe=False)
 
 # UTILS
+def json_to_response_object(url):
+    raw_response = urllib2.urlopen(url).read()
+    response_object = json.loads(raw_response)
+    return response_object
+    
 def delete_tags(text):
     return re.sub('<.*?>', '', text)
+
+def get_artist_image_url(name):
+    query_url = WIKIPEDIA_API_IMAGE_INFO_MODULE_ENDPOINT + urllib2.quote(name)
+    response_object = json_to_response_object(query_url)
+    page_info = response_object['query']['pages'].values()[0]
+    return page_info['thumbnail']['source'] if page_info.get('thumbnail') else static('unknown.jpg')
