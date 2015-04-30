@@ -1,9 +1,58 @@
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
+<script src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-latest.js"></script>
 
-<div id="remote">
+<!-- Text field --> 
+<div id="artist-search">
   <input class="typeahead" type="text" placeholder="Your favourite Rap/R&B artist">
 </div>
+ 
+<!-- Bloodhound engine --> 
+<script>
+var artistEngine = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+        'url': 'query/%QUERY',
+        'wildcard': '%QUERY',
+    }
+});
+</script>
+
+<!-- Suggestions template --> 
+<script id="result-template" type="text/x-handlebars-template">
+    <div class="ProfileCard u-cf">
+        <img class="ProfileCard-avatar" src="{{image_url}}">
+        <div class="ProfileCard-details">{{name}}</div>
+        <div class="ProfileCard-stats">{{snippet}}</div>
+    </div>
+</script>
+
+<script id="empty-template" type="text/x-handlebars-template">
+    <div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div>
+</script>
+
+<!-- Text field initialization with typeahead.js --> 
+<script>
+template = Handlebars.compile($("#result-template").html());
+empty = Handlebars.compile($("#empty-template").html());
+
+$('#artist-search .typeahead').typeahead(null, {
+    name: 'artist-engine',
+    display: 'name',
+    source: artistEngine,
+    templates: {
+        suggestion: template,
+        empty: empty,
+    }
+})
+.on('typeahead:asyncrequest', function() {
+    $('.Typeahead-spinner').show();
+})
+.on('typeahead:asynccancel typeahead:asyncreceive', function() {
+    $('.Typeahead-spinner').hide();
+});
+</script>    
 
 <style>
 .typeahead, .tt-query, .tt-hint {
@@ -42,22 +91,3 @@
     line-height: 18px;
 }
 </style>
-
-<script>
-var bestPictures = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    remote: {
-        'url': 'query/%QUERY',
-        'wildcard': '%QUERY',
-    }
-});
- 
-bestPictures.initialize();
- 
-$('#remote .typeahead').typeahead(null, {
-    name: 'best-pictures',
-    displayKey: 'value',
-    source: bestPictures.ttAdapter()
-});
-</script>    
