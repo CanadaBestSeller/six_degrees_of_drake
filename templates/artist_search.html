@@ -10,7 +10,7 @@
 <!-- Bloodhound engine --> 
 <script>
 var artistEngine = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('artist'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
         'url': 'query/%QUERY',
@@ -34,16 +34,16 @@ var artistEngine = new Bloodhound({
 
 <!-- Text field initialization with typeahead.js --> 
 <script>
-template = Handlebars.compile($("#result-template").html());
-empty = Handlebars.compile($("#empty-template").html());
+template = Handlebars.compile($("#result-template").html().trim());
+empty = Handlebars.compile($("#empty-template").html().trim());
 
 $('#artist-search .typeahead').typeahead(null, {
     name: 'artist-engine',
-    display: 'name',
+    displayKey: 'artist',
     source: artistEngine,
     templates: {
         suggestion: template,
-        empty: empty,
+        empty: empty
     }
 })
 .on('typeahead:asyncrequest', function() {
