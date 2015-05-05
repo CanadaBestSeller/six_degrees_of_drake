@@ -1,2 +1,7 @@
 import six_degrees_of_drake.views
-six_degrees_of_drake.views.get_artist_image_url('Drake (rapper)')
+
+query_url = """
+http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srwhat=text&srlimit=3&continue=&srprop=snippet&srsearch=%22associated%20acts%22+intitle:daniel
+"""
+
+response_object = views.json_to_response_object(query_url)

@@ -59,12 +59,12 @@ def query(request, query):
 
     # Add artist + metatdata to result
     result = []
-    for artist_entry in response_object['query']['search']:
+    for artist_entry in response_object[u'query'][u'search']:
         artist_dictionary = {}
-        artist_dictionary['name'] = artist_entry['title']
-        artist_dictionary['url'] = WIKIPEDIA_DOMAIN + urllib2.quote(artist_entry['title'])
-        artist_dictionary['snippet'] = delete_tags(artist_entry['snippet'])
-        artist_dictionary['image_url'] = get_artist_image_url(artist_entry['title'])
+        artist_dictionary['name'] = artist_entry[u'title']
+        artist_dictionary['url'] = WIKIPEDIA_DOMAIN + urllib2.quote(artist_entry[u'title'].encode('utf-8'))
+        artist_dictionary['snippet'] = delete_tags(artist_entry[u'snippet'])
+        artist_dictionary['image_url'] = get_artist_image_url(artist_entry[u'title'])
         # TODO get the url of the artist's image
         result.append(artist_dictionary)
 
@@ -73,14 +73,17 @@ def query(request, query):
 # UTILS
 def json_to_response_object(url):
     raw_response = urllib2.urlopen(url).read()
-    response_object = json.loads(raw_response)
+    response_object = json.loads(raw_response, 'utf-8')
     return response_object
     
 def delete_tags(text):
     return re.sub('<.*?>', '', text)
 
 def get_artist_image_url(name):
-    query_url = WIKIPEDIA_API_IMAGE_INFO_MODULE_ENDPOINT + urllib2.quote(name)
+    """
+    CAREFUL: The argument here could be utf-8
+    """
+    query_url = WIKIPEDIA_API_IMAGE_INFO_MODULE_ENDPOINT + urllib2.quote(name.encode('utf-8'))
     response_object = json_to_response_object(query_url)
     page_info = response_object['query']['pages'].values()[0]
     return page_info['thumbnail']['source'] if page_info.get('thumbnail') else static('unknown.jpg')
