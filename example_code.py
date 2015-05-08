@@ -5,3 +5,4 @@ http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srwhat=te
 """
 
 response_object = views.json_to_response_object(query_url)
+name = response_object['query']['search'][1]['title']

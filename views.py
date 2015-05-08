@@ -6,6 +6,8 @@ from django.templatetags.static import static
 import urllib2
 import json
 import re
+import os
+import six_degrees_of_drake
 
 from six_degrees_of_drake.models import Artist
 
@@ -69,6 +71,13 @@ def query(request, query):
         result.append(artist_dictionary)
 
     return JsonResponse(result, safe=False)
+
+def example_films(request):
+    prefix = six_degrees_of_drake.__path__[0]
+    filepath = prefix + static('six_degrees_of_drake/example_films.json')
+    example_films = open(filepath, 'r')
+    example_films_json = json.loads(example_films.read())
+    return JsonResponse(example_films_json, safe=False)
 
 # UTILS
 def json_to_response_object(url):

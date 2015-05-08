@@ -1,6 +1,8 @@
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
-<script src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-latest.js"></script>
+{% load staticfiles %}
+<script src="{% static 'six_degrees_of_drake/jquery-1.10.2.min.js' %}"></script>
+<script src="{% static 'six_degrees_of_drake/jquery.xdomainrequest.min.js' %}"></script>
+<script src="{% static 'six_degrees_of_drake/typeahead.bundle.js' %}"></script>
+<script src="{% static 'six_degrees_of_drake/handlebars.js' %}"></script>
 
 <!-- Text field --> 
 <div id="artist-search">
@@ -10,13 +12,15 @@
 <!-- Bloodhound engine --> 
 <script>
 var artistEngine = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('artist'),
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
         'url': 'query/%QUERY',
         'wildcard': '%QUERY',
     }
 });
+
+artistEngine.initialize();
 </script>
 
 <!-- Suggestions template --> 
@@ -38,11 +42,11 @@ template = Handlebars.compile($("#result-template").html().trim());
 empty = Handlebars.compile($("#empty-template").html().trim());
 
 $('#artist-search .typeahead').typeahead(null, {
-    name: 'artist-engine',
-    displayKey: 'artist',
-    source: artistEngine,
+    displayKey: 'name',
+    source: artistEngine.ttAdapter(),
     templates: {
-        suggestion: template,
+        //suggestion: Handlebars.compile('<div>{{name}}</div>'), // IT DOES NOT recognize this, which is the simplest case
+        //suggestion: Handlebars.compile('<div><strong>{{artist}}</strong> – {{artist.snippet}}</div>'),
         empty: empty
     }
 })
