@@ -1,10 +1,13 @@
 Landing Page
     - CSS
-    * Ajax Wikipedia name search
-        - Find example of wikipedia query API
-        - Use typeahead.js + bloodhound + wiki API
-        - Filter by artists (page with associated acts ONLY)
-        - Customize typeahead.js UI with artist thumbnails
+        - Thumbnails:
+            - Standardized height/width/border
+            - Add unknown.jpg
+        - Profile cards:
+            - Arrange content
+            - Add borders
+            - disable center
+            - enter details page onPress enter (instead of auto-fill)
 
 Details Page
     - Picture of artist on node

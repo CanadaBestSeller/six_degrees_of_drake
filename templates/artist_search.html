@@ -2,7 +2,6 @@
 <script src="{% static 'six_degrees_of_drake/jquery-1.10.2.min.js' %}"></script>
 <script src="{% static 'six_degrees_of_drake/jquery.xdomainrequest.min.js' %}"></script>
 <script src="{% static 'six_degrees_of_drake/typeahead.bundle.js' %}"></script>
-<script src="{% static 'six_degrees_of_drake/handlebars.js' %}"></script>
 
 <!-- Text field --> 
 <div id="artist-search">
@@ -23,31 +22,15 @@ var artistEngine = new Bloodhound({
 artistEngine.initialize();
 </script>
 
-<!-- Suggestions template --> 
-<script id="result-template" type="text/x-handlebars-template">
-    <div class="ProfileCard u-cf">
-        <img class="ProfileCard-avatar" src="{{image_url}}">
-        <div class="ProfileCard-details">{{name}}</div>
-        <div class="ProfileCard-stats">{{snippet}}</div>
-    </div>
-</script>
-
-<script id="empty-template" type="text/x-handlebars-template">
-    <div class="EmptyMessage">Your search turned up 0 results. This most likely means the backend is down, yikes!</div>
-</script>
-
 <!-- Text field initialization with typeahead.js --> 
 <script>
-template = Handlebars.compile($("#result-template").html().trim());
-empty = Handlebars.compile($("#empty-template").html().trim());
 
 $('#artist-search .typeahead').typeahead(null, {
     displayKey: 'name',
     source: artistEngine.ttAdapter(),
     templates: {
-        //suggestion: Handlebars.compile('<div>{{name}}</div>'), // IT DOES NOT recognize this, which is the simplest case
-        //suggestion: Handlebars.compile('<div><strong>{{artist}}</strong> – {{artist.snippet}}</div>'),
-        empty: empty
+        suggestion: dataToCard,
+        empty: function(data) {return "Not found...";}
     }
 })
 .on('typeahead:asyncrequest', function() {
@@ -56,6 +39,16 @@ $('#artist-search .typeahead').typeahead(null, {
 .on('typeahead:asynccancel typeahead:asyncreceive', function() {
     $('.Typeahead-spinner').hide();
 });
+
+function dataToCard(data) {
+    return '<a href="' + data.url + '">' + 
+           '<div class="ProfileCard">' + 
+           '<img class="ProfileCard-avatar" src="' + data.image_url + '">' + 
+           '<div class="ProfileCard-details">' + data.name + '</div>' + 
+           '<div class="ProfileCard-stats">' + data.snippet + '</div>' + 
+           '</div>' +
+           '</a>';
+}
 </script>    
 
 <style>
