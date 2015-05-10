@@ -95,4 +95,4 @@ def get_artist_image_url(name):
     query_url = WIKIPEDIA_API_IMAGE_INFO_MODULE_ENDPOINT + urllib2.quote(name.encode('utf-8'))
     response_object = json_to_response_object(query_url)
     page_info = response_object['query']['pages'].values()[0]
-    return page_info['thumbnail']['source'] if page_info.get('thumbnail') else static('unknown.jpg')
+    return page_info['thumbnail']['source'] if page_info.get('thumbnail') else static('six_degrees_of_drake/unknown.jpg')

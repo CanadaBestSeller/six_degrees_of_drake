@@ -41,17 +41,37 @@ $('#artist-search .typeahead').typeahead(null, {
 });
 
 function dataToCard(data) {
-    return '<a href="' + data.url + '">' + 
-           '<div class="ProfileCard">' + 
-           '<img class="ProfileCard-avatar" src="' + data.image_url + '">' + 
-           '<div class="ProfileCard-details">' + data.name + '</div>' + 
-           '<div class="ProfileCard-stats">' + data.snippet + '</div>' + 
-           '</div>' +
-           '</a>';
+     return '<a href="' + data.url + '">' + 
+                '<div class="ProfileCard">' + 
+                    '<div class="ProfileCard-image" style="background-image: url(\'' + data.image_url + '\');" title="' + data.name + '"></div>' + 
+                    '<div class="ProfileCard-details">' + 
+                        '<div class="ProfileCard-name"><h2>' + data.name + '</h2></div>' + 
+                        '<div class="ProfileCard-snippet">' + data.snippet + '</div>' + 
+                    '</div>' +
+                '</div>' +
+            '</a>';
 }
 </script>    
 
 <style>
+.ProfileCard {
+    text-align: center;
+}
+
+.ProfileCard-image {
+    display: table-cell;
+    width: 126px;
+    height: 80px;
+    border: 16px, white;
+    background-position: center center;
+    background-size: cover;
+    border-radius: 50%;
+}
+
+.ProfileCard-details {
+    display: table-cell;
+}
+
 .typeahead, .tt-query, .tt-hint {
     width: 700px;
     height: 60;
@@ -66,8 +86,6 @@ function dataToCard(data) {
 
 .tt-dropdown-menu {
     width: 422px;
-    margin-top: 12px;
-    padding: 8px 0px;
     background-color: #FFF;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -76,14 +94,12 @@ function dataToCard(data) {
 
 .tt-dropdown-menu {
     width: 600px;
-    margin-top: 12px;
     background-color: #fff;
     border: 1px solid #ccc;
     border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .tt-suggestion {
-    padding: 8px 20px;
     font-size: 14px;
     line-height: 18px;
 }
