@@ -55,22 +55,36 @@ function dataToCard(data) {
 
 <style>
 .ProfileCard {
-    text-align: center;
+    position: relative;
 }
 
 .ProfileCard-image {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     background-position: center center;
     background-size: cover;
     border-radius: 50%;
     position: absolute;
+    left: 8px;
 }
 
 .ProfileCard-details {
     min-height: 80px;
     padding-left: 80px;
     text-align: left;
+    color: initial;
+}
+
+.ProfileCard-name h2 {
+    min-height: 40px
+    margin-top: 0;
+    margin-bottom: 2px;
+    color:#0095dd;
+}
+
+.ProfileCard-snippet {
+    margin-top: 2px;
+    margin-bottom: 0;
 }
 
 .typeahead, .tt-query, .tt-hint {

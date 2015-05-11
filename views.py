@@ -65,7 +65,7 @@ def query(request, query):
         artist_dictionary = {}
         artist_dictionary['name'] = artist_entry[u'title']
         artist_dictionary['url'] = WIKIPEDIA_DOMAIN + urllib2.quote(artist_entry[u'title'].encode('utf-8'))
-        artist_dictionary['snippet'] = delete_tags(artist_entry[u'snippet'])
+        artist_dictionary['snippet'] = delete_tags(artist_entry[u'snippet']) + u'...'
         artist_dictionary['image_url'] = get_artist_image_url(artist_entry[u'title'])
         # TODO get the url of the artist's image
         result.append(artist_dictionary)
