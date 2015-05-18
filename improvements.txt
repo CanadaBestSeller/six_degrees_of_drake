@@ -1,8 +1,5 @@
 Landing Page
     - CSS
-        - Thumbnails:
-            - Standardized height/width/border
-            - Add unknown.jpg
         - Profile cards:
             - Arrange content
             - Add borders

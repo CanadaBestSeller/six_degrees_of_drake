@@ -29,12 +29,24 @@ class Artist(models.Model):
     def get_or_create_with_url(cls, url):
         """
         The only method you should use for getting/creating Artist
-        makes sure that the inputted url is indeed the final redirect (canonical url)
-        so that we avoid creating extra instances of Artists, such as 
+        automatically resolves redirects such as
         www.wiki.com/Drake_(Rapper) & www.wiki.com/Drake_(Entertainer)
+        returns a tuple, where the first element is the found/created
+        reference, and second element is true iff the reference was just created
+        if the url is invalid, then this returns (None, False)
         """
-        # Get source code
-        request = urllib2.urlopen(url)
+        # Get source code, return none if page not found
+        try:
+            # For some reason, redirect link does not show up if there are spaces
+            # in the url, so we must replace them with underscores
+            # Moreover, this method must be able to handle both string type for testing,
+            # as well as unicode type for prod
+            if type(url) == unicode:
+                url = unicode.replace(url, u' ', u'_')
+            request = urllib2.urlopen(url)
+        except urllib2.HTTPError:
+            return (None, False)
+
         source_code = request.read(40000)
 
         # Get canonical url
@@ -81,9 +93,9 @@ class Artist(models.Model):
 
             for associated_act_url in associated_acts_urls:
                 associated_act, just_created = Artist.get_or_create_with_url(associated_act_url)
-                if just_created:
+                if associated_act and just_created:
                     associated_act.save()
-                self.associated_acts.add(associated_act)
+                    self.associated_acts.add(associated_act)
 
         self.save()
 
