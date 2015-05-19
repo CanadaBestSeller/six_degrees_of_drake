@@ -32,8 +32,9 @@ def graph(request, artist_wiki_name):
     print(artist_url)
 
     if artist:
-        artist.populate()
-        context = {'nodes': artist.nodes_json(), 'links': artist.links_json()}
+        # artist.populate()
+        # context = {'nodes': artist.nodes_json(), 'links': artist.links_json()}
+        context = {'node': artist.self_node_json()}
         return render(request, 'six_degrees_of_drake/graph.html', context)
     else:
         return HttpResponse("Cannot find name of artist")

@@ -99,6 +99,13 @@ class Artist(models.Model):
 
         self.save()
 
+    def self_node_json(self):
+        """
+        Returns a JSON compatible with d3js grphs
+        Contains ONLY the node information of self
+        """
+        return json.dumps({'id': self.id, 'name': self.name, 'group': self.id % 10})
+
     def nodes_json(self):
         """
         Returns a JSON compatible with d3js graphs

@@ -14,3 +14,6 @@ Details Page
         - blue=male, red=female
         - specture: green=rich, grey=poor
     - Click artist to centralize
+
+Backend
+    - cache canonical urls by creating a table of non-canonical -> canonical
