@@ -5,6 +5,8 @@ import urllib2
 import re
 import json
 
+from six_degrees_of_drake import utils
+
 domain = "http://en.wikipedia.org"
 
 class Artist(models.Model):
@@ -16,6 +18,7 @@ class Artist(models.Model):
     # 1: Created with only URL populated
     # 2: Metadata & Associated acts are also populated
     url             = models.CharField(max_length=1000, blank=False, unique=True)
+    image_url       = models.CharField(max_length=1000, blank=True)
     name            = models.CharField(max_length=200)
     associated_acts = models.ManyToManyField("self")
 
@@ -66,8 +69,32 @@ class Artist(models.Model):
             artist_name = re.search(artist_name_pattern, source_code, re.DOTALL).group(1)
             clean_artist_name = artist_name.split('(')[0].split(' - ')[0].rstrip()
             artist.name = clean_artist_name
+            artist.image_url = utils.get_artist_image_url(artist.name)
 
         return artist, just_created
+
+    @classmethod
+    def jsonify(cls, associated_acts, artist):
+        """
+        example result:
+        {
+            nodes: [
+                {id: '2', name: 'name2'},
+                {id: '3', name: 'name3'},
+                {id: '4', name: 'name4'},
+            ],
+            links: [
+                {source: '1', target: '2'},
+                {source: '1', target: '3'},
+                {source: '1', target: '4'},
+            ]
+        }
+        """
+        result = {'nodes':[], 'links':[]}
+        for associated_act in associated_acts:
+            result['nodes'].append({'id':associated_act.id, 'name':associated_act.name, 'imageUrl':associated_act.image_url})
+            result['links'].append({'source':artist.id, 'target':associated_act.id})
+        return result
 
     #
     # INSTANCE METHODS
@@ -98,6 +125,21 @@ class Artist(models.Model):
                     self.associated_acts.add(associated_act)
 
         self.save()
+
+    def create_generator(self):
+        """
+        returns a generator which will continuously yeild artist information,
+        starting from the artist, then iterating in a breadth-first search fashion
+        """
+        yield {'nodes': [{'id':self.id, 'name':self.name, 'imageUrl':self.image_url}]}
+        queue = [(self, None)]
+        while True:
+            source, target = queue.pop(0)
+            source.populate()
+            associated_acts = source.associated_acts.all()
+            yield Artist.jsonify(associated_acts, source)
+            for artist in associated_acts:
+                queue.append((artist, source))
 
     def self_node_json(self):
         """
