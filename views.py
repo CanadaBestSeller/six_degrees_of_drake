@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 from django.templatetags.static import static
+from django.views.decorators.http import condition
+from django.http import StreamingHttpResponse
 
 import urllib2
 import json
@@ -28,12 +30,20 @@ def index(request):
 def graph(request, artist_wiki_name):
     artist_url = WIKIPEDIA_DOMAIN + artist_wiki_name
     artist, just_created = Artist.get_or_create_with_url(artist_url)
-    print(artist_url)
 
     if artist:
         return render(request, 'six_degrees_of_drake/graph.html')
     else:
         return HttpResponse("Cannot find name of artist")
+
+# INFO PAGE (Streams artist info)
+@condition(etag_func=None)
+def info(request, artist_wiki_name):
+    artist_url = WIKIPEDIA_DOMAIN + artist_wiki_name
+    artist, just_created = Artist.get_or_create_with_url(artist_url)
+
+    if artist:
+        return StreamingHttpResponse(artist.create_generator(), content_type="text/json")
 
 # QUERY ENDPOINT
 def query(request, query):

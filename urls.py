@@ -9,6 +9,9 @@ urlpatterns = patterns('',
     # ex: /six_degrees_of_drake/graph/drake_(rapper)
     url(r'^graph/(?P<artist_wiki_name>.+?)/$', views.graph, name='graph'),
 
+    # ex: /six_degrees_of_drake/info/drake_(rapper)
+    url(r'^info/(?P<artist_wiki_name>.+?)/$', views.info, name='info'),
+
     # ex: /six_degrees_of_drake/drake/stats/
     url(r'^stats/(?P<artist_name>\w+)/stats/$', views.stats, name='stats'),
 
