@@ -1,19 +1,14 @@
 Landing Page
-    - CSS
-        - Profile cards:
-            - Arrange content
-            - Add borders
-            - disable center
-            - enter details page onPress enter (instead of auto-fill)
+    - typeahead.js
+        - Support multi-word suggestions
 
-Details Page
-    - Picture of artist on node
+Graphs Page
     - Relationship length
-    - AJAX depth of graph level
     - Change color based on criteria. Eg:
         - blue=male, red=female
-        - specture: green=rich, grey=poor
+        - spectrum: green=rich, grey=poor
     - Click artist to centralize
 
 Backend
-    - cache canonical urls by creating a table of non-canonical -> canonical
+    - Fix streaming upon client termination
+    - AJAX js handler to receive streaming
