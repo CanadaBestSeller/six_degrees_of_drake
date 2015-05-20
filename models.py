@@ -10,13 +10,9 @@ from six_degrees_of_drake import utils
 domain = "http://en.wikipedia.org"
 
 class Artist(models.Model):
-    # url is the most important field. It must be unique, and
-    # it is the single source of information
+    # url is the primary key and therefore the most important field.
+    # It must be unique, and it is the single source of information
     # for name and associated acts
-    #
-    # For now, every Artist has 2 states:
-    # 1: Created with only URL populated
-    # 2: Metadata & Associated acts are also populated
     url             = models.CharField(max_length=1000, blank=False, unique=True)
     image_url       = models.CharField(max_length=1000, blank=True)
     name            = models.CharField(max_length=200)
@@ -38,6 +34,13 @@ class Artist(models.Model):
         reference, and second element is true iff the reference was just created
         if the url is invalid, then this returns (None, False)
         """
+        # First try to find the canonical url offline via the CanonicalUrlCache
+        query_set = CanonicalUrlCache.objects.filter(given_url=url)
+        if query_set:
+            result = Artist.objects.get(url=query_set[0].canonical_url)
+            print("[INFO] retrieved %s offline" % result.name)
+            return (result, False)
+
         # Get source code, return none if page not found
         try:
             # For some reason, redirect link does not show up if there are spaces
@@ -70,6 +73,10 @@ class Artist(models.Model):
             clean_artist_name = artist_name.split('(')[0].split(' - ')[0].rstrip()
             artist.name = clean_artist_name
             artist.image_url = utils.get_artist_image_url(artist.name)
+            artist.save()
+
+            CanonicalUrlCache(given_url=url, canonical_url=canonical_url).save()
+            print("[INFO] cached %s --> %s" % (url, canonical_url))
 
         return artist, just_created
 
@@ -171,3 +178,12 @@ class Artist(models.Model):
             links.append({'source': self.id, 'target': associated_act.id, 'value': 1}) # TODO: value func
 
         return json.dumps(links)
+
+class CanonicalUrlCache(models.Model):
+    """
+    This model exists sole for the purpose of fast, offline lookups.
+    Because an Artist's canonical url is the unique identifier (primary key),
+    any non-canonical url which redirects to the canonical url should lookup the same artist
+    """
+    given_url     = models.CharField(max_length=1000, blank=False, unique=True)
+    canonical_url = models.CharField(max_length=1000, blank=False, unique=False)
