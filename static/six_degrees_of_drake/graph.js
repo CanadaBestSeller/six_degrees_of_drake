@@ -2,9 +2,9 @@
 // JQUERY
 // D3JS
 
-function Graph(imageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeOpacity, linkDistance, charge) {
+function Graph(defaultImageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeOpacity, linkDistance, charge) {
     // public vars
-    this.imageUrl = imageUrl || "http://33.media.tumblr.com/avatar_a3415e501f10_128.png";
+    this.defaultImageUrl = defaultImageUrl || "http://33.media.tumblr.com/avatar_a3415e501f10_128.png";
     this.width = width || 500;
     this.height = height || 500;
     this.nodeRadius = nodeRadius || 48;
@@ -49,8 +49,9 @@ function Graph(imageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeO
         start();
     }
 
-    this.addNode = function(id, name) {
-        n = {id:id, name:name, imageUrl:this.imageUrl};
+    this.addNode = function(id, name, imageUrl) {
+        finalImageUrl = imageUrl || this.defaultImageUrl;
+        n = {id:id, name:name, imageUrl:finalImageUrl};
         this.nodes.push(n);
 
         var nodePattern = imageDefinitions.append("pattern")
@@ -63,7 +64,7 @@ function Graph(imageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeO
         nodePattern.append("image")
             .attr("height", this.nodeRadius*2)
             .attr("width", this.nodeRadius*2)
-            .attr("xlink:href", this.imageUrl);
+            .attr("xlink:href", finalImageUrl);
 
         start();
     }
@@ -101,14 +102,3 @@ function Graph(imageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeO
             .attr("y2", function(d) { return d.target.y; });
     }
 }
-
-// Add sample nodes. Delete later
-var g = new Graph();
-
-g.addNode('1', 'name1');
-g.addNode('2', 'name2');
-g.addNode('3', 'name3');
-
-g.addLink('1', '2');
-g.addLink('3', '2');
-g.addLink('1', '3');

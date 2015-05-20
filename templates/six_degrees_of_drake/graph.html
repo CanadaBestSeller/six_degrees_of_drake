@@ -3,6 +3,86 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 
+<!-- graph.js will look for the body tag and place a svg graph object inside -->
 <body></body>
 
 <script src="{% static 'six_degrees_of_drake/graph.js' %}"></script>
+
+<script>
+function pollServer() {
+    // if received json from server,
+    update(json)
+}
+
+var stubJson = {
+    nodes: [
+        {id: '1', name: 'name1', imageUrl: 'http://ecards.connectingsingles.com/photos/ecards/1/ecardu69873_1334.jpg'},
+        {id: '2', name: 'name2'},
+        {id: '3', name: 'name3'},
+    ],
+    links: [
+        {source: '1', target: '2'},
+        {source: '1', target: '3'},
+        {source: '3', target: '2'},
+    ]
+};
+
+function update(json) {
+    for (var i = 0; i < json.nodes.length; i++) {
+        g.addNode(json.nodes[i].id, json.nodes[i].name, json.nodes[i].imageUrl);
+    }
+    for (var i = 0; i < json.links.length; i++) {
+        g.addLink(json.links[i].source, json.links[i].target);
+    }
+}
+
+// Add sample nodes. Delete later
+var g = new Graph();
+update(stubJson);
+</script>
+
+<div id="ajaxButton" style="cursor: pointer; text-decoration: underline">Make a request</span>
+
+<script type="text/javascript">
+aj = function() {
+    var httpRequest;
+    document.getElementById("ajaxButton").onclick = function() { makeRequest('test.html'); };
+
+    function makeRequest(url) {
+        if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+            httpRequest = new XMLHttpRequest();
+        } else if (window.ActiveXObject) { // IE
+            try {
+                httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+            } 
+            catch (e) {
+                try {
+                    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+                } 
+                catch (e) {}
+            }
+        }
+
+        if (!httpRequest) {
+            alert('Giving up :( Cannot create an XMLHTTP instance');
+            return false;
+        }
+
+        httpRequest.onreadystatechange = alertContents;
+        httpRequest.open('GET', url);
+        httpRequest.send();
+    }
+
+    function alertContents() {
+        if (httpRequest.readyState === 4) {
+            if (httpRequest.status === 200) {
+                alert(httpRequest.responseText);
+            } else {
+                alert('There was a problem with the request.');
+            }
+        }
+    }
+}
+
+aj();
+</script>
