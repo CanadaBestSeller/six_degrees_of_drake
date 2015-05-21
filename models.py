@@ -96,11 +96,25 @@ class Artist(models.Model):
                 {source: '1', target: '4'},
             ]
         }
+
+        example result v2.0 for oboe.js - ducktyping
+                {id: '2', name: 'name2'},
+                {id: '3', name: 'name3'},
+                {id: '4', name: 'name4'},
+
+                {source: '1', target: '2'},
+                {source: '1', target: '3'},
+                {source: '1', target: '4'},
         """
-        result = {'nodes':[], 'links':[]}
+        # result = {'nodes':[], 'links':[]}
+        # for associated_act in associated_acts:
+        #     result['nodes'].append({'id':associated_act.id, 'name':associated_act.name, 'imageUrl':associated_act.image_url})
+        #     result['links'].append({'source':artist.id, 'target':associated_act.id})
+
+        result = []
         for associated_act in associated_acts:
-            result['nodes'].append({'id':associated_act.id, 'name':associated_act.name, 'imageUrl':associated_act.image_url})
-            result['links'].append({'source':artist.id, 'target':associated_act.id})
+            result.append('{{"id":"{}", "name":"{}", "imageUrl":"{}"}}'.format(associated_act.id, associated_act.name, associated_act.image_url))
+            result.append('{{"source":"{}", "target":"{}"}}'.format(artist.id, associated_act.id))
         return result
 
     #
@@ -138,15 +152,22 @@ class Artist(models.Model):
         returns a generator which will continuously yeild artist information,
         starting from the artist, then iterating in a breadth-first search fashion
         """
-        yield {'nodes': [{'id':self.id, 'name':self.name, 'imageUrl':self.image_url}]}
+        ITERATIONS = 1
+        yield '{"graphInfo":['
+        # yield {'nodes': [{'id':self.id, 'name':self.name, 'imageUrl':self.image_url}]}
+        yield '{{"id":"{}", "name":"{}", "imageUrl":"{}"}}'.format(self.id, self.name, self.image_url)
+        yield ','
         queue = [(self, None)]
-        while True:
+        for x in range(ITERATIONS):
             source, target = queue.pop(0)
             source.populate()
             associated_acts = source.associated_acts.all()
-            yield Artist.jsonify(associated_acts, source)
+            for item in Artist.jsonify(associated_acts, source):
+                yield item
+                yield ','
             for artist in associated_acts:
                 queue.append((artist, source))
+        yield '{"placeholder": "placeholder"}]}'
 
     def self_node_json(self):
         """

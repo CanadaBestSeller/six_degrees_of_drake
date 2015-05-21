@@ -32,7 +32,8 @@ def graph(request, artist_wiki_name):
     artist, just_created = Artist.get_or_create_with_url(artist_url)
 
     if artist:
-        return render(request, 'six_degrees_of_drake/graph.html')
+        context = {'artist_wiki_name': artist_wiki_name}
+        return render(request, 'six_degrees_of_drake/graph.html', context)
     else:
         return HttpResponse("Cannot find name of artist")
 
