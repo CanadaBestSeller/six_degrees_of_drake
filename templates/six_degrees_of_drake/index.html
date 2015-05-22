@@ -13,24 +13,26 @@
         {% include 'artist_search.html' %}
     </div>
 
-    <div class="footer">
-        {% if artist_list %}
-            There are {{ artist_list|length }} artist(s) currently in the database.
-            <ul>
-            {% for artist in artist_list %}
-                <li><a href="/six_degrees_of_drake/{{ artist.name }}/">{{ artist.name }}</a></li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>Currently no artists in the database.</p>
-        {% endif %}
-    </div>
+</div>
+
+<div class="footer">
+    {% if artist_list %}
+        There are {{ artist_list|length }} artist(s) currently in the database.
+        <ul>
+        {% for artist in artist_list %}
+            <li><a href="/six_degrees_of_drake/{{ artist.name }}/">{{ artist.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Currently no artists in the database.</p>
+    {% endif %}
 </div>
 </body>
 
 <style>
 body {
     text-align: center;
+    position: relative;
 }
 
 #logo {
@@ -46,8 +48,10 @@ body {
 }
 
 .footer {
+    margin: 80px;
     font-size: x-small;
-    margin: 600px 0;
+    position: fixed;
+    bottom: 0;
 }
     
 .footer li {
@@ -60,10 +64,15 @@ body {
 }
 
 .footer ul {
+    margin: 0;
     padding: 0;
 }
 
 #search {
     padding: 40px 40px;
+}
+
+html {
+    height: 100%;
 }
 </style>
