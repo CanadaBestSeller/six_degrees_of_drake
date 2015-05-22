@@ -10,27 +10,23 @@
 <script src="{% static 'six_degrees_of_drake/graph.js' %}"></script>
 
 <script>
-// function Graph(defaultImageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeOpacity, linkDistance, charge) {
-// DEFAULT VAUE: defaultImageUrl = defaultImageUrl || "http://33.media.tumblr.com/avatar_a3415e501f10_128.png";
-// DEFAULT VAUE: width = width || 500;
-// DEFAULT VAUE: height = height || 500;
-// DEFAULT VAUE: nodeRadius = nodeRadius || 48;
-// DEFAULT VAUE: stroke = stroke || "#0095dd";
-// DEFAULT VAUE: strokeWidth = strokeWidth || "2px";
-// DEFAULT VAUE: strokeOpacity = strokeOpacity || ".6";
-// DEFAULT VAUE: linkDistance = linkDistance || 200;
-// DEFAULT VAUE: charge = charge || -400;
 
-var g = new Graph();
+var g = new Graph(null,    // defaultImageUrl || "http://33.media.tumblr.com/avatar_a3415e501f10_128.png";
+                  "100%",  // width || 500;
+                  "97%",   // height || 500;
+                  32,      // nodeRadius || 32;
+                  null,    // borderStyle || "none";
+                  null,    // stroke || "#0095dd";
+                  null,    // strokeWidth || "2px";
+                  null,    // strokeOpacity || ".6";
+                  null,    // linkDistance || 200;
+                  -800);   // charge || -400;
 
 oboe('../../info/{{artist_wiki_name}}')
     .node('{id name}', function(artistNode) {
-        console.log('id is ', artistNode.id)
         g.addNode(artistNode.id, artistNode.name, artistNode.imageUrl);
     })
     .node('{source target}', function(artistLink) {
-        console.log('source is', artistLink.source)
-        console.log('target is', artistLink.target)
         g.addLink(artistLink.source, artistLink.target);
     })   
     .done(function(things) {});

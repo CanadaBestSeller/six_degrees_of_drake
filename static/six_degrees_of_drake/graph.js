@@ -2,12 +2,13 @@
 // JQUERY
 // D3JS
 
-function Graph(defaultImageUrl, width, height, nodeRadius, stroke, strokeWidth, strokeOpacity, linkDistance, charge) {
+function Graph(defaultImageUrl, width, height, nodeRadius, borderStyle, stroke, strokeWidth, strokeOpacity, linkDistance, charge) {
     // public vars
     this.defaultImageUrl = defaultImageUrl || "http://33.media.tumblr.com/avatar_a3415e501f10_128.png";
     this.width = width || 500;
     this.height = height || 500;
     this.nodeRadius = nodeRadius || 48;
+    this.borderStyle = borderStyle || "none";
     this.stroke = stroke || "#0095dd";
     this.strokeWidth = strokeWidth || "2px";
     this.strokeOpacity = strokeOpacity || ".6";
@@ -31,9 +32,9 @@ function Graph(defaultImageUrl, width, height, nodeRadius, stroke, strokeWidth, 
         .on("tick", tick);
 
     var svg = d3.select("body").append("svg")
-        .attr("width", this.width)
-        .attr("height", this.height)
-        .style("border-style", "solid")
+        .style("width", this.width)
+        .style("height", this.height)
+        .style("border-style", this.borderStyle)
         .style("border-color", this.stroke)
         .style("border-width", this.strokeWidth);
 
@@ -100,5 +101,14 @@ function Graph(defaultImageUrl, width, height, nodeRadius, stroke, strokeWidth, 
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
+    }
+
+    resize();
+    d3.select(window).on("resize", resize);
+
+    function resize() {
+        width = window.innerWidth, height = window.innerHeight;
+        svg.attr("width", width).attr("height", height);
+        force.size([width, height]).resume();
     }
 }
