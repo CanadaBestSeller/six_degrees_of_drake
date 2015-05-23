@@ -138,7 +138,7 @@ class Artist(models.Model):
         returns a generator which will continuously yeild artist information,
         starting from the artist, then iterating in a breadth-first search fashion
         """
-        ITERATIONS = 100
+        ITERATIONS = 0
         yield '{"graphInfo":['
         yield '{{"id":"{}", "name":"{}", "imageUrl":"{}"}},'.format(self.id, self.name, self.image_url)
         queue = [(self, None)]

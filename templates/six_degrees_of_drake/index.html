@@ -20,7 +20,7 @@
         There are {{ artist_list|length }} artist(s) currently in the database.
         <ul>
         {% for artist in artist_list %}
-            <li><a href="/six_degrees_of_drake/{{ artist.name }}/">{{ artist.name }}</a></li>
+            <li><a href="/six_degrees_of_drake/graph/{{ artist.name }}/">{{ artist.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}

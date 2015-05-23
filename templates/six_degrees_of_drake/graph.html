@@ -20,7 +20,10 @@ var g = new Graph(null,    // defaultImageUrl || "http://33.media.tumblr.com/ava
                   null,    // strokeWidth || "2px";
                   null,    // strokeOpacity || ".6";
                   null,    // linkDistance || 200;
-                  -800);   // charge || -400;
+                  -800,    // charge || -400;
+                  "font-family: Helvetica, sans-serif; font-size: 14px", // textStyle
+                  -40,     // textOffsetX || 0;
+                  50);     // textOffsetY || 0;
 
 oboe('../../info/{{artist_wiki_name}}')
     .node('{id name}', function(artistNode) {
