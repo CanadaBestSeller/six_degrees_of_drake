@@ -73,14 +73,16 @@ function Graph(defaultImageUrl,
 
         var nodePattern = imageDefinitions.append("pattern")
             .attr("id", "node-pattern-" + id)
-            .attr("height", 1)
-            .attr("width", 1)
-            .attr("x", "0")
-            .attr("y", "0");
+            .attr("preserveAspectRatio", "xMidYMid slice")
+            .attr("viewBox", "0 0 1 1")
+            .attr("patternContentUnits", "objectBoundingBox")
+            .attr("height", "100%")
+            .attr("width", "100%");
 
         nodePattern.append("image")
-            .attr("height", this.nodeRadius*2)
-            .attr("width", this.nodeRadius*2)
+            .attr("height", 1)
+            .attr("width", 1)
+            .attr("preserveAspectRatio", "xMidYMid slice")
             .attr("xlink:href", finalImageUrl);
 
         start();

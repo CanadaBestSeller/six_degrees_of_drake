@@ -75,7 +75,7 @@ class Artist(models.Model):
         if just_created:
             artist_name_pattern = "<title>(.*?)<\/title>"
             artist_name = re.search(artist_name_pattern, source_code, re.DOTALL).group(1)
-            clean_artist_name = artist_name.split('(')[0].split(' - ')[0].rstrip()
+            clean_artist_name = artist_name.split(' - ')[0].rstrip()
             artist.name = clean_artist_name
             artist.image_url = utils.get_artist_image_url(artist.name)
             artist.wiki_name = artist.url.rsplit('/', 1)[1]
@@ -145,7 +145,7 @@ class Artist(models.Model):
         returns a generator which will continuously yeild artist information,
         starting from the artist, then iterating in a breadth-first search fashion
         """
-        ITERATIONS = 4
+        ITERATIONS = 2
         yield u'{"graphInfo":['
         yield u'{{"id":"{}", "name":"{}", "imageUrl":"{}"}},'.format(self.id, unicode.replace(self.name, u'"', u'\\"'), self.image_url)
         queue = [(self, None)]
