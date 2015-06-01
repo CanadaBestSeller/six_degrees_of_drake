@@ -15,7 +15,8 @@ class Artist(models.Model):
     # for name and associated acts
     url             = models.CharField(max_length=1000, blank=False, unique=True)
     image_url       = models.CharField(max_length=1000, blank=True)
-    name            = models.CharField(max_length=200)
+    name            = models.CharField(max_length=200, blank=False)
+    wiki_name            = models.CharField(max_length=200, blank=False)
     associated_acts = models.ManyToManyField("self")
 
     def __unicode__(self):
@@ -34,6 +35,10 @@ class Artist(models.Model):
         reference, and second element is true iff the reference was just created
         if the url is invalid, then this returns (None, False)
         """
+        # Just in case the url is already percentage-encoded,
+        # We need to replace %xx escapes by their single-character equivalents
+        url = urllib2.unquote(url)
+
         # First try to find the canonical url offline via the CanonicalUrlCache
         query_set = CanonicalUrlCache.objects.filter(given_url=url)
         if query_set:
@@ -73,6 +78,7 @@ class Artist(models.Model):
             clean_artist_name = artist_name.split('(')[0].split(' - ')[0].rstrip()
             artist.name = clean_artist_name
             artist.image_url = utils.get_artist_image_url(artist.name)
+            artist.wiki_name = artist.url.rsplit('/', 1)[1]
             artist.save()
 
             CanonicalUrlCache(given_url=url, canonical_url=canonical_url).save()
@@ -99,14 +105,15 @@ class Artist(models.Model):
         """
         result = []
         for associated_act in associated_acts:
-            result.append('{{"id":"{}", "name":"{}", "imageUrl":"{}"}},'.format(associated_act.id, associated_act.name, associated_act.image_url))
-            result.append('{{"source":"{}", "target":"{}"}},'.format(artist.id, associated_act.id))
+            result.append(u'{{"id":"{}", "name":"{}", "imageUrl":"{}"}},'.format(associated_act.id, unicode.replace(associated_act.name, u'"', u'\\"'), associated_act.image_url))
+            result.append(u'{{"source":"{}", "target":"{}"}},'.format(artist.id, associated_act.id))
         return result
 
     #
     # INSTANCE METHODS
     #
     def populate(self):
+        print("[INFO] populating %s..." % self.name)
         # Get source code
         request = urllib2.urlopen(self.url)
         source_code = request.read(40000)
@@ -138,9 +145,9 @@ class Artist(models.Model):
         returns a generator which will continuously yeild artist information,
         starting from the artist, then iterating in a breadth-first search fashion
         """
-        ITERATIONS = 10
-        yield '{"graphInfo":['
-        yield '{{"id":"{}", "name":"{}", "imageUrl":"{}"}},'.format(self.id, self.name, self.image_url)
+        ITERATIONS = 2
+        yield u'{"graphInfo":['
+        yield u'{{"id":"{}", "name":"{}", "imageUrl":"{}"}},'.format(self.id, unicode.replace(self.name, u'"', u'\\"'), self.image_url)
         queue = [(self, None)]
         generated_artists = [self]
         for x in range(ITERATIONS):
@@ -153,38 +160,7 @@ class Artist(models.Model):
                 yield entry
             for artist in associated_acts:
                 queue.append((artist, source))
-        yield '{"placeholder": "placeholder"}]}'
-
-    def self_node_json(self):
-        """
-        Returns a JSON compatible with d3js grphs
-        Contains ONLY the node information of self
-        """
-        return json.dumps({'id': self.id, 'name': self.name, 'group': self.id % 10})
-
-    def nodes_json(self):
-        """
-        Returns a JSON compatible with d3js graphs
-        Contains node information of self and associated acts
-        """
-        nodes = []
-        nodes.append({'id': self.id, 'name': self.name, 'group': self.id % 10})
-
-        for associated_act in self.associated_acts.all():
-            nodes.append({'id': associated_act.id, 'name': associated_act.name, 'group': associated_act.id % 10})
-        return json.dumps(nodes)
-
-    def links_json(self):
-        """
-        Returns a JSON compatible with d3js graphs
-        Contains relationship information of self and associated acts
-        """
-        links = []
-
-        for associated_act in self.associated_acts.all():
-            links.append({'source': self.id, 'target': associated_act.id, 'value': 1}) # TODO: value func
-
-        return json.dumps(links)
+        yield u'{"placeholder": "placeholder"}]}'
 
 class CanonicalUrlCache(models.Model):
     """
