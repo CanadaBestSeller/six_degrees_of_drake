@@ -18,6 +18,7 @@
 <div class="footer">
     {% if artist_list %}
         There are {{ artist_list|length }} artist(s) currently in the database.
+        <ul><li> </li></ul>
         <ul>
         {% for artist in artist_list %}
             <li><a href="/six_degrees_of_drake/graph/{{ artist.name }}/">{{ artist.name }}</a></li>
@@ -48,10 +49,12 @@ body {
 }
 
 .footer {
-    margin: 80px;
     font-size: x-small;
-    position: inherit;
-    bottom: 0;
+    position: fixed;
+    width: auto;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
 }
     
 .footer li {
