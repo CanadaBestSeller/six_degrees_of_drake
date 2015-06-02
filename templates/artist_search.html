@@ -6,6 +6,7 @@
 <!-- Text field --> 
 <div id="artist-search">
   <input class="typeahead" type="text" placeholder="Your favourite Rap/R&B artist">
+  <img class="Typeahead-spinner" src="{% static 'six_degrees_of_drake/spinner.gif' %}">
 </div>
  
 <!-- Bloodhound engine --> 
@@ -117,5 +118,17 @@ function dataToCard(data) {
 .tt-suggestion {
     font-size: 14px;
     line-height: 18px;
+}
+
+#artist-search {
+    position: relative;
+}
+
+.Typeahead-spinner {
+    position: absolute;
+    top: 16px;
+    right: 30px;
+    text-align: left;
+    display: none;
 }
 </style>

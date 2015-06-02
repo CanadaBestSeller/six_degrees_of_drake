@@ -7,8 +7,9 @@ Graphs Page
     - Change color based on criteria. Eg:
         - blue=male, red=female
         - spectrum: green=rich, grey=poor
-    - Click artist to centralize
+    - Click artist to centralize or create more relationships
+    - Fix default center of gravity
 
 Backend
     - Fix streaming upon client termination
-    - AJAX js handler to receive streaming
+    - More incremental streams
