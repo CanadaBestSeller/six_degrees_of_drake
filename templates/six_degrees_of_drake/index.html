@@ -17,7 +17,7 @@
 
 <div class="footer">
     {% if artist_list %}
-        There are {{ artist_list|length }} artist(s) currently in the database.
+        There are {{ artist_list|length }} artist{{ artist_list|length|pluralize }} currently in the database.
         <ul>
         {% for artist in artist_list %}
             <li><a href="/six_degrees_of_drake/graph/{{ artist.name }}/">{{ artist.name }}</a></li>

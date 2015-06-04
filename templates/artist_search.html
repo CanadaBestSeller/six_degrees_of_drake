@@ -2,13 +2,29 @@
 <script src="{% static 'six_degrees_of_drake/jquery-1.10.2.min.js' %}"></script>
 <script src="{% static 'six_degrees_of_drake/jquery.xdomainrequest.min.js' %}"></script>
 <script src="{% static 'six_degrees_of_drake/typeahead.bundle.js' %}"></script>
+<script src="http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars-latest.js"></script>
 
 <!-- Text field --> 
 <div id="artist-search">
   <input class="typeahead" type="text" placeholder="Your favourite Rap/R&B artist">
   <img class="Typeahead-spinner" src="{% static 'six_degrees_of_drake/spinner.gif' %}">
 </div>
- 
+
+<!-- Suggestion template -->
+{% verbatim %}
+<script id="suggestion-template" type="text/x-handlebars-template">
+    <a href="{{url}}">
+        <div class="ProfileCard">
+            <div class="ProfileCard-image" style="background-image: url({{image_url}});" title="{{name}}"></div>
+            <div class="ProfileCard-details">
+                <div class="ProfileCard-name"><h2>{{name}}</h2></div>
+                <div class="ProfileCard-snippet">{{snippet}}</div>
+            </div>
+        </div>
+    </a>
+</script>
+{% endverbatim %}
+
 <!-- Bloodhound engine --> 
 <script>
 var artistEngine = new Bloodhound({
@@ -25,12 +41,12 @@ artistEngine.initialize();
 
 <!-- Text field initialization with typeahead.js --> 
 <script>
-
+suggestionTemplate = Handlebars.compile($("#suggestion-template").html());
 $('#artist-search .typeahead').typeahead(null, {
     displayKey: 'name',
     source: artistEngine.ttAdapter(),
     templates: {
-        suggestion: dataToCard,
+        suggestion: suggestionTemplate,
         empty: function(data) {return "Not found...";}
     }
 })
@@ -40,20 +56,9 @@ $('#artist-search .typeahead').typeahead(null, {
 .on('typeahead:asynccancel typeahead:asyncreceive', function() {
     $('.Typeahead-spinner').hide();
 });
-
-function dataToCard(data) {
-     return '<a href="' + data.url + '">' + 
-                '<div class="ProfileCard">' + 
-                    '<div class="ProfileCard-image" style="background-image: url(\'' + data.image_url + '\');" title="' + data.name + '"></div>' + 
-                    '<div class="ProfileCard-details">' + 
-                        '<div class="ProfileCard-name"><h2>' + data.name + '</h2></div>' + 
-                        '<div class="ProfileCard-snippet">' + data.snippet + '</div>' + 
-                    '</div>' +
-                '</div>' +
-            '</a>';
-}
 </script>    
 
+<!-- CSS --> 
 <style>
 .ProfileCard {
     position: relative;
